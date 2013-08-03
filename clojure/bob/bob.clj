@@ -6,7 +6,7 @@
    ;; Nothing was said 
    (empty? s) "Fine, be that way."
    ;; YELLING IN ALL CAPS.
-   (= s (.toUpperCase s)) "Woah, chill out!"
+   (= s (clojure.string/upper-case s)) "Woah, chill out!"
    ;; A question?
    (= \? (last s)) "Sure."
    ;; Default response
