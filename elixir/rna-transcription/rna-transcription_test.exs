@@ -10,18 +10,18 @@ defmodule DNATest do
   end
 
   test "transcribes guanosine unchanged" do
-    # assert 'G' == DNA.to_rna('G')
+    assert 'G' == DNA.to_rna('G')
   end
 
   test "transcribes adenosine unchanged" do
-    # assert 'A' == DNA.to_rna('A')
+    assert 'A' == DNA.to_rna('A')
   end
 
   test "transcribes thymidine to uracil" do
-    # assert 'U' == DNA.to_rna('T')
+    assert 'U' == DNA.to_rna('T')
   end
 
   test "it transcribes all occurrences of thymidine to uracil" do
-    # assert 'ACGUGGUCUUAA' == DNA.to_rna('ACGTGGTCTTAA')
+    assert 'ACGUGGUCUUAA' == DNA.to_rna('ACGTGGTCTTAA')
   end
 end
