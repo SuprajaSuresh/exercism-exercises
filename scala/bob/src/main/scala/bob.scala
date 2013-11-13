@@ -16,15 +16,13 @@ class Bob {
 
   // No lower case letters with at least one upper case letter
   val yellingRE = "^[^\\p{Lower}]*\\p{Upper}[^\\p{Lower}]*$".r
-  def classify(statement: String): Prompt = {
-    if (statement.trim == "") {
-      Silence
-    } else if (!yellingRE.findFirstMatchIn(statement).isEmpty) {
-      Yell
-    } else if (statement.endsWith("?")) {
-      Question
-    } else {
-      Other
-    }
+  def classify(statement: String): Prompt = if (statement.trim == "") {
+    Silence
+  } else if (!yellingRE.findFirstMatchIn(statement).isEmpty) {
+    Yell
+  } else if (statement.endsWith("?")) {
+    Question
+  } else {
+    Other
   }
 }
