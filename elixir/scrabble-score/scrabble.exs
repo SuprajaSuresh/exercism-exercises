@@ -26,9 +26,9 @@ defmodule Scrabble do
 
   @spec score(String.t) :: non_neg_integer
   def score(word) do
-    # Takes advantage of UTF-8 encoding, looks at one byte at a time without.
-    # All characters in the table are < 128, which are encoded as-is in UTF-8,
-    # and anything else, including multi-byte code point sequences, will map
+    # Takes advantage of UTF-8 encoding, looks at one byte at a time.
+    # All characters in the table are < 128, which are encoded as-is in UTF-8.
+    # Anything else, including multi-byte code point sequences, will map
     # to zero in the table.
     byte_reduce(word, 0, fn(byte, acc) -> acc + elem(@table, byte) end)
   end
