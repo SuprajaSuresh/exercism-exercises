@@ -1,6 +1,6 @@
 module Grains (square, total) where
 
-square :: Int -> Integer
+square :: (Integral a) => Int -> a
 square = (2 ^) . pred
 
 total :: Integer
