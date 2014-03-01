@@ -1,6 +1,11 @@
-import Test.HUnit (Assertion, (@=?), runTestTT, Test(..))
-import Control.Monad (void)
+import Test.HUnit (Assertion, (@=?), runTestTT, Test(..), Counts(..))
+import System.Exit (ExitCode(..), exitWith)
 import Bob (responseFor)
+
+exitProperly :: IO Counts -> IO ()
+exitProperly m = do
+  counts <- m
+  exitWith $ if failures counts /= 0 || errors counts /= 0 then ExitFailure 1 else ExitSuccess
 
 testCase :: String -> Assertion -> Test
 testCase label assertion = TestLabel label (TestCase assertion)
@@ -48,11 +53,11 @@ test_respondsToStatementContainingQuestionMark =
 
 test_respondsToSilence :: Assertion
 test_respondsToSilence =
-  "Fine. Be that way." @=? responseFor ""
+  "Fine. Be that way!" @=? responseFor ""
 
 test_respondsToProlongedSilence :: Assertion
 test_respondsToProlongedSilence =
-  "Fine. Be that way." @=? responseFor "    "
+  "Fine. Be that way!" @=? responseFor "    "
 
 test_respondsToNonLettersWithQuestion :: Assertion
 test_respondsToNonLettersWithQuestion =
@@ -64,7 +69,23 @@ test_respondsToMultipleLineQuestions =
 
 test_respondsToOtherWhitespace :: Assertion
 test_respondsToOtherWhitespace =
-  "Fine. Be that way." @=? responseFor "\n\r \t\v\xA0\x2002" -- \xA0 No-break space, \x2002 En space
+  "Fine. Be that way!" @=? responseFor "\n\r \t\v\xA0\x2002" -- \xA0 No-break space, \x2002 En space
+
+test_respondsToOnlyNumbers :: Assertion
+test_respondsToOnlyNumbers =
+  "Whatever." @=? responseFor "1, 2, 3"
+
+test_respondsToQuestionWithOnlyNumbers :: Assertion
+test_respondsToQuestionWithOnlyNumbers =
+  "Sure." @=? responseFor "4?"
+
+test_respondsToUnicodeShout :: Assertion
+test_respondsToUnicodeShout =
+  "Woah, chill out!" @=? responseFor "\xdcML\xc4\xdcTS!"
+
+test_respondsToUnicodeNonShout :: Assertion
+test_respondsToUnicodeNonShout =
+  "Whatever." @=? responseFor "\xdcML\xe4\xdcTS!"
 
 respondsToTests :: [Test]
 respondsToTests =
@@ -87,7 +108,11 @@ respondsToTests =
   , testCase "multiple-line statement containing question mark"
     test_respondsToMultipleLineQuestions
   , testCase "all whitespace is silence" test_respondsToOtherWhitespace
+  , testCase "only numbers" test_respondsToOnlyNumbers
+  , testCase "question with only numbers" test_respondsToQuestionWithOnlyNumbers
+  , testCase "unicode shout" test_respondsToUnicodeShout
+  , testCase "unicode non-shout" test_respondsToUnicodeNonShout
   ]
 
 main :: IO ()
-main = void (runTestTT (TestList respondsToTests))
+main = exitProperly (runTestTT (TestList respondsToTests))

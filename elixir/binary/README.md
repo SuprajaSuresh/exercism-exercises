@@ -1,6 +1,6 @@
 # Binary
 
-Write a program that will convert a binary number, represented as a string (i.e. '101010'), to it's decimal equivalent using first principles
+Write a program that will convert a binary number, represented as a string (e.g. '101010'), to its decimal equivalent using first principles
 
 Write a program passing the tests.
 

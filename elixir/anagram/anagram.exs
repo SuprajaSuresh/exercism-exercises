@@ -1,10 +1,9 @@
-# Note that the & special form requires Elixir 0.10.1.
 defmodule Anagram do
-  def match(word, possible_anagrams) do
-    word_letters = sorted_letters(word)
-    Enum.filter(possible_anagrams, &(word_letters == sorted_letters(&1)))
-  end
-  defp sorted_letters(word) do
-    word |> String.codepoints |> Enum.sort
+  @doc """
+  Returns all candidates that are anagrams of, but not equal to, 'base'.
+  """
+  @spec match(String.t, [String.t]) :: [String.t]
+  def match(base, candidates) do
+  
   end
 end

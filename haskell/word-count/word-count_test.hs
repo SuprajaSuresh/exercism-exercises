@@ -1,7 +1,12 @@
-import Test.HUnit (Assertion, (@=?), runTestTT, Test(..))
-import Control.Monad (void)
+import Test.HUnit (Assertion, (@=?), runTestTT, Test(..), Counts(..))
+import System.Exit (ExitCode(..), exitWith)
 import Data.Map (fromList)
 import WordCount (wordCount)
+
+exitProperly :: IO Counts -> IO ()
+exitProperly m = do
+  counts <- m
+  exitWith $ if failures counts /= 0 || errors counts /= 0 then ExitFailure 1 else ExitSuccess
 
 testCase :: String -> Assertion -> Test
 testCase label assertion = TestLabel label (TestCase assertion)
@@ -25,7 +30,14 @@ wordCountTests =
     wordCount "testing, 1, 2 testing"
   , testCase "normalize case" $
     fromList [("go", 3)] @=? wordCount "go Go GO"
+  , testCase "prefix punctuation" $
+    fromList [("testing", 2), ("1", 1), ("2", 1)] @=?
+    wordCount "!%%#testing, 1, 2 testing"
+  , testCase "symbols are separators" $
+    fromList [("hey", 1), ("my", 1), ("spacebar", 1),
+              ("is", 1), ("broken", 1)] @=?
+    wordCount "hey,my_spacebar_is_broken."
   ]
 
 main :: IO ()
-main = void (runTestTT (TestList wordCountTests))
+main = exitProperly (runTestTT (TestList wordCountTests))

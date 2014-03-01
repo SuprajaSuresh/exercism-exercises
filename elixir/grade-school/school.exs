@@ -1,17 +1,35 @@
 defmodule School do
+	@moduledoc """
+	Simulate students in a school.
 
-  def add(d, name, grade) do
-    # I don't like that the tests specify a particular data structure for this
-    # exercise. It's O(n) to *append* to a list.
-    HashDict.update(d, grade, [name], &(&1 ++ [name]))
-  end
+	Each student is in a grade.
+	"""
 
-  def grade(d, grade) do
-    HashDict.get(d, grade, [])
-  end
-  
-  def sort(d) do
-    HashDict.new(d, fn {k, v} -> {k, Enum.sort(v)} end)
-  end
+	@doc """
+	Add a student to a particular grade in school.
+	"""
+	@spec add(HashDict, string, pos_integer) :: HashDict
+
+	def add(db, name, grade) do
+
+	end
+
+	@doc """
+	Return the names of the students in a particular grade.
+	"""
+	@spec grade(HashDict, pos_integer) :: [String]
+
+	def grade(db, grade) do
+
+	end
+
+	@doc """
+	Sorts the school by grade and name.
+	"""
+	@spec sort(HashDict) :: HashDict
+
+	def sort(db) do
+
+	end
 
 end

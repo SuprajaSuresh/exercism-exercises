@@ -1,5 +1,14 @@
 defmodule DNA do
-  def to_rna(cs) do
-    lc c inlist cs, do: (if c == ?T do ?U else c end)
+  @doc """
+  Transcribes a character list representing DNA nucleotides to RNA
+
+  ## Examples
+
+  iex> DNA.to_rna('ACTG')
+  'UGAC'
+  """
+  @spec to_rna([char]) :: [char]
+  def to_rna(dna) do
+
   end
 end
