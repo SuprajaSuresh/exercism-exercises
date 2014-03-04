@@ -22,17 +22,21 @@ data BinTree a = BT {
   , btRight :: Maybe (BinTree a) -- ^ Right child
 } deriving (Eq, Show)
 
-data Direction = ZL | ZR deriving (Show, Eq)
+data ZParent a = ZL { zValue :: a
+                    , zRight :: Maybe (BinTree a) }
+               | ZR { zValue :: a
+                    , zLeft  :: Maybe (BinTree a) }
+               deriving (Show, Eq)
 
 -- | A zipper for a binary tree.
 data Zipper a =
-  Z { zFocus     :: BinTree a
-    , zParent    :: Maybe (Direction, Zipper a)
+  Z { zFocus :: BinTree a
+    , zPath  :: [ZParent a]
     } deriving (Show, Eq)
 
 -- | Get a zipper focussed on the root node.
 fromTree :: BinTree a -> Zipper a
-fromTree t = Z { zFocus = t, zParent = Nothing }
+fromTree t = Z { zFocus = t, zPath = [] }
 
 -- | Get the complete tree from a zipper.
 toTree :: Zipper a -> BinTree a
@@ -44,23 +48,29 @@ value = btValue . zFocus
 
 -- | Get the left child of the focus node, if any.
 left :: Zipper a -> Maybe (Zipper a)
-left z = f `fmap` btLeft (zFocus z)
-  where f t = Z { zFocus = t, zParent = Just (ZL, z) }
+left z = f `fmap` btLeft p
+  where
+    p = zFocus z
+    f t = Z { zFocus = t
+            , zPath = ZL { zValue = btValue p, zRight = btRight p } : zPath z }
 
 -- | Get the right child of the focus node, if any.
 right :: Zipper a -> Maybe (Zipper a)
-right z = f `fmap` btRight (zFocus z)
-  where f t = Z { zFocus = t, zParent = Just (ZR, z) }
+right z = f `fmap` btRight p
+  where
+    p = zFocus z
+    f t = Z { zFocus = t
+            , zPath = ZR { zValue = btValue p, zLeft = btLeft p } : zPath z }
 
 -- | Get the parent of the focus node, if any.
 up :: Zipper a -> Maybe (Zipper a)
-up z = f `fmap` zParent z
+up z = case zPath z of
+  p:ps -> Just $ case p of
+    ZL v r -> Z (BT v here r) ps
+    ZR v l -> Z (BT v l here) ps
+  []   -> Nothing
   where
-    t = zFocus z
-    f (dir, p) = case dir of
-      ZL -> p { zFocus = pt { btLeft  = Just t } }
-      ZR -> p { zFocus = pt { btRight = Just t } }
-      where pt = zFocus p
+    here = Just (zFocus z)
 
 -- | Set the value of the focus node.
 setValue :: a -> Zipper a -> Zipper a
